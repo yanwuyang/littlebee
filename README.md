@@ -5,6 +5,7 @@
 虚拟机 Bochs<br>
 汇编编译器 NASM<br>
 
+下载Bochs http://bochs.sourceforge.net/<br>
 下载NASM https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.gz<br>
 
 安装NASM
