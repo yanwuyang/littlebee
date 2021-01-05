@@ -81,4 +81,5 @@ struct task_struct {
 
 #define NULL 0
 
-
+extern struct task_struct *task[NR_TASKS];
+extern struct task_struct *current;
