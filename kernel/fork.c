@@ -2,7 +2,6 @@
 #include "../include/screen.h"
 #include "../include/system.h"
 
-extern struct task_struct * task;
 /**
  *
  * 创建进程
