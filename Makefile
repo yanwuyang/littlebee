@@ -1,14 +1,14 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h)
+C_SOURCES = $(wildcard init/*.c kernel/*.c drivers/*.c)
+HEADERS = $(wildcard include/*.h)
 
 OBJ = ${C_SOURCES:.c=.o}
 
 all: os-image
 
-os-image: boot/boot_sect.bin kernel.bin
+os-image: boot/bootsect.bin kernel.bin
 	cat $^ > os-image
 
-kernel.bin: kernel/kernel_entry.o kernel/head.o  kernel/setup_page.o kernel/sys_call.o  ${OBJ}
+kernel.bin: head/kernel_entry.o head/head.o  head/setup_page.o kernel/sys_call.o  ${OBJ}
 	ld -m elf_i386 -s -o $@ -Ttext 0x8000  $^ --oformat binary
 
 %.o : %.c ${HEADERS}
@@ -22,6 +22,6 @@ kernel.bin: kernel/kernel_entry.o kernel/head.o  kernel/setup_page.o kernel/sys_
 
 clean:
 	rm -fr *.bin *.dis *.o os-image
-	rm -fr kernel/*.o boot/*.bin drivers/*.o
+	rm -fr kernel/*.o boot/*.bin drivers/*.o head/*.o
 
 
