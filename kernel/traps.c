@@ -1,8 +1,6 @@
+#include "../include/system.h"
 
 extern void keyboard_interrupt(void);
-extern void timer_interrupt(void);
-extern void system_call(void);
-
 
 void page_exception(void) {
 }
