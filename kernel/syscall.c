@@ -1,4 +1,5 @@
 #include "../include/screen.h"
+#include "../include/sys_call.h"
 
 int sys_write(char *msg) {
 	print(msg);
