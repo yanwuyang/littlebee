@@ -5,7 +5,7 @@ global keyboard_interrupt,timer_interrupt,system_call,sys_fork
 keyboard_interrupt:
     mov al,0x20
     out 0x20,al             ;设置中断器主片  EOI 1
-    call keyboard
+    ;call keyboard
     xor eax,eax
     in al, 0x60
     mov al,'a'

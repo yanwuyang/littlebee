@@ -3,8 +3,8 @@
 #include "../include/screen.h"
 #include "../include/system.h"
 
-extern void timer_interrupt(void);
-extern void system_call(void);
+extern int timer_interrupt(void);
+extern int system_call(void);
 
 union task_union {
 	struct task_struct task;
@@ -70,7 +70,7 @@ void sched_init(void) {
 	outb_p(LATCH & 0xff, 0x40);
 	outb(LATCH >> 8, 0x40);
 	set_intr_gate(0x20, &timer_interrupt);
-	outb(inb_p(0x21) & ~0x01, 0x21);
+	outb(inb_p(0x21) & ~0x01, 0x21);//开启中断 在初始中断芯片的时候默认屏蔽了所有中断
 
 	set_system_gate(0x80, &system_call);
 }
