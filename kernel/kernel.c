@@ -167,6 +167,16 @@ void main(){
     move_to_user_mode();//切换到用户模式
     printf("to user mode\n");
     sys_print("go to frok\n");
+    int pid = fork();
+    if(pid==1){
+        for(;;){
+      	   // printf("pid:0\n");
+	}
+    }else{
+        for(;;){
+           // printf("pid:1\n");
+        }
+    }
     for(;;){
 
     }

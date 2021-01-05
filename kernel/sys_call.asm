@@ -1,7 +1,8 @@
-global keyboard_interrupt,timer_interrupt,system_call
+global keyboard_interrupt,timer_interrupt,system_call,sys_fork
 [extern keyboard]
 [extern schedule]
 [extern sys_call_table]
+[extern copy_process]
 keyboard_interrupt:
         mov al,0x20
         out 0x20,al             ;设置中断器主片  EOI 1
@@ -42,6 +43,11 @@ timer_interrupt:
 	pop ds
         iret
 
+; ss
+; esp
+; eflags
+; cs
+; eip
 system_call:
 	push ds
 	push es
@@ -50,17 +56,29 @@ system_call:
 	push edx
 	push ecx
 	push ebx
-	mov edx,0x10
+	mov edx,0x10	;内核段
 	mov ds,dx
 	mov es,dx
 
         call [sys_call_table+eax] ;eax调用号
-
+	
+	push eax	;返回值
+	pop eax
 	pop ebx
 	pop ecx
 	pop edx
-	pop eax
+	add esp,4	;最开始的eax  参数系统调用编号
 	pop fs
 	pop es
 	pop ds
         iret
+
+
+sys_fork:
+ 	push gs
+	push esi
+	push edi
+	push ebp
+        call copy_process
+        add  esp,16   ;忽略 gs,esi,edi,ebp
+        ret

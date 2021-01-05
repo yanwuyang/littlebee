@@ -1,5 +1,7 @@
 #include "head.h"
-
+/*
+ *tss（task state struct）结构定义参考对应的CPU架构
+ */
 struct tss_struct{
   long back_link;	//上一个任务链接  高16位为0
   long esp0;		//0级别内核栈顶
@@ -10,7 +12,7 @@ struct tss_struct{
   long ss2;
   long cr3;		//页目录寄存器
   long eip;		//指令寄存器
-  long eflagss;		//标记寄存器
+  long eflags;		//标记寄存器
   long eax;
   long ecx;
   long edx;
@@ -31,6 +33,7 @@ struct tss_struct{
 
 
 struct task_struct{
+  long pid;
   long state;
   long counter;
   struct desc_struct ldt[3];
@@ -53,7 +56,7 @@ struct task_struct{
 
 #define INIT_TASK \
  { \
-    0,15,{{0,0},{0x9f,0xc0fa00},{0x9f,0xc0f200}}, \
+   0,0,15,{{0,0},{0x9f,0xc0fa00},{0x9f,0xc0f200}}, \
     { \
        0,PAGE_SIZE+(long)&init_task,0x10,0,0,0,0,(long)&pg_dir, \
        0,0,0,0,0,0,0,0, \
@@ -137,6 +140,11 @@ static char printbuf[1024];
 #define sys_print(buf) \
  __asm__("int $0x80" ::"a"(4),"b"(buf));
 
+static int fork(){
+    long res;
+    __asm__("int $0x80" :"=a"(res):"a"(0));
+   return res;
+}
 
 static int printf(const char *msg){
     int i=0;
