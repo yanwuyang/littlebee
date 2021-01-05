@@ -15,8 +15,8 @@ struct task_struct * task[NR_TASKS] = {&(init_task.task), };
 /**
  * 任务调度
  *
- * ljmp 该操作数由4字节便宜地址和2字节的段选择符组成。因此_temp中的a值是32位便宜地址，而b的低字节是新的TSS段的选择符（高2字节不用）
- * jmp 16位段选择符:32位便宜地址
+ * ljmp 该操作数由4字节偏移地址和2字节的段选择符组成。因此_temp中的a值是32位偏移地址，而b的低字节是新的TSS段的选择符（高2字节不用）
+ * jmp 16位段选择符:32位偏移地址
  */
 void schedule(void){
     if(current->counter==0){
