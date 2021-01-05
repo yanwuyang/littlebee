@@ -1,6 +1,5 @@
 #include "../include/sched.h"
 #include "../include/io.h"
-#include "../include/head.h"
 #include "../include/screen.h"
 #include "../include/system.h"
 
