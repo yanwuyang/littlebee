@@ -1,5 +1,5 @@
 #include "../include/screen.h"
-#include "../include/low_level.h"
+#include "../include/io.h"
 
 #define ROW 18
 #define COL 0
@@ -15,20 +15,20 @@ int get_screen_offset(int col, int row) {
 
 //获取光标
 int get_cursor() {
-	port_byte_out(REG_SCREEN_CTRL, 14);
-	int offset = port_byte_in(REG_SCREEN_DATA) << 8; //光标的高8位
-	port_byte_out(REG_SCREEN_CTRL, 15); //光标的低8位
-	offset += port_byte_in(REG_SCREEN_DATA);
+	outb(14,REG_SCREEN_CTRL);
+	int offset = inb(REG_SCREEN_DATA) << 8; //光标的高8位
+	outb(15,REG_SCREEN_CTRL); //光标的低8位
+	offset += inb(REG_SCREEN_DATA);
 	return offset * 2;
 
 }
 
 void set_cursor(int offset) {
 	offset /= 2;
-	port_byte_out(REG_SCREEN_CTRL, 14);
-	port_byte_out(REG_SCREEN_DATA, (unsigned char) (offset >> 8)); //光标高8位设置
-	port_byte_out(REG_SCREEN_CTRL, 15);
-	port_byte_out(REG_SCREEN_DATA, (unsigned char) (offset & 0x00ff)); //光标的低8位
+	outb(14,REG_SCREEN_CTRL);
+	outb((unsigned char) (offset >> 8),REG_SCREEN_DATA); //光标高8位设置
+	outb(15,REG_SCREEN_CTRL);
+	outb((unsigned char) (offset & 0x00ff),REG_SCREEN_DATA); //光标的低8位
 }
 
 void print_num_(int num) {

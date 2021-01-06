@@ -33,30 +33,30 @@ switch_to_pm:
 ;OCW3 用于设置特殊屏蔽方式和读取寄存器状态（IRR和ISR），当位4位3=01 操作端口0x20、0xA0
 
 setup_idt:
-    mov al,0x11		;00010001  位0： 需要发送ICW4 位1：有多片级联 位4： 边缘触发
-    out 0x20,al             ;向主片发送ICW1
+    mov al,0x11		            ;00010001  位0： 需要发送ICW4 位1：有多片级联 位4： 边缘触发
+    out 0x20,al                 ;向主片发送ICW1
     ;dw 0x00eb,0x00eb
-    out 0xA0,al		;向从片发送ICW1
+    out 0xA0,al		            ;向从片发送ICW1
 
 	;设置ICW2
 	;dw 0x00eb,0x00eb
-	mov al,0x20             ;主片中断向量起始号0x20
+	mov al,0x20                 ;主片中断向量起始号0x20
  	out 0x21,al
 	;dw 0x00eb,0x00eb
-	mov al,0x28		;从片中断向量起始号0x28
+	mov al,0x28		            ;从片中断向量起始号0x28
 	out 0xA1,al
 
 	;设置ICW3
 	;dw 0x00eb,0x00eb	
-	mov al,0x04		;主芯片R2连从芯片INT
+	mov al,0x04		            ;主芯片R2连从芯片INT
 	out 0x21,al
 	;dw 0x00eb,0x00eb
-	mov al,0x02		;
+	mov al,0x02		            ;
 	out 0xA1,al
 	
-        ;设置ICW4
+    ;设置ICW4
 	;dw 0x00eb,0x00eb
-	mov al,0x01          	;位2：AEOI 为0时非自动结束，要求中断处理过程中明确向8259A芯片写中断结束命令EOI 为1时 表示自动结束
+	mov al,0x01          	     ;位2：AEOI 为0时非自动结束，要求中断处理过程中明确向8259A芯片写中断结束命令EOI 为1时 表示自动结束
 	out 0x21,al
 	;dw 0x00eb,0x00eb
 	out 0xA1,al
@@ -64,9 +64,9 @@ setup_idt:
 	;屏蔽的中断向量
 	;dw 0x00eb,0x00eb
 	mov al,0xff
-	out 0x21,al		;屏蔽主芯片所有中断请求
+	out 0x21,al		              ;屏蔽主芯片所有中断请求
 	;dw 0x00eb,0x00eb
-	out 0xA1,al		;屏蔽从芯片所有中断请求
+	out 0xA1,al		              ;屏蔽从芯片所有中断请求
 
 	
  	lidt [idt_descr] 
@@ -78,16 +78,16 @@ setup_gdt:
    ret
 gdt:
 gdt_null:                       ;定义空描述符
-    dd 0x0                  ;定义4个字节的0
-    dd 0x0                  ;定义4个字节的0
+    dd 0x0                      ;定义4个字节的0
+    dd 0x0                      ;定义4个字节的0
 
 gdt_code:
-    dw 0xffff               ;limit(bits 0-15)
-    dw 0x0                  ;基址(bits 0-15)
-    db 0x0                  ;基址（bits 16-23)
-    db 10011010b            ;1st flags,type flags
-    db 11001111b            ;2nd flags,Limit(bits 16-19)
-    db 0x0                  ;基址(bits 24-31)
+    dw 0xffff                   ;limit(bits 0-15)
+    dw 0x0                      ;基址(bits 0-15)
+    db 0x0                      ;基址(bits 16-23)
+    db 10011010b                ;1st flags,type flags
+    db 11001111b                ;2nd flags,Limit(bits 16-19)
+    db 0x0                      ;基址(bits 24-31)
 
 gdt_data:
     dw 0xffff
@@ -102,11 +102,11 @@ zero times 253*8 db 0
 gdt_end:
 
 gdt_descriptor:                 ;GDT段描述符
-    dw gdt_end-gdt-1  ;段大小2个字节
-    dd gdt            ;段基址4个字节
+    dw gdt_end-gdt-1            ;段大小2个字节
+    dd gdt                      ;段基址4个字节
 
-CODE_SEG equ gdt_code - gdt ;代码段索引
-DATA_SEG equ gdt_data - gdt ;数据段索引
+CODE_SEG equ gdt_code - gdt     ;代码段索引
+DATA_SEG equ gdt_data - gdt     ;数据段索引
 
 
 idt:
@@ -123,7 +123,7 @@ idt_descr:
 init_pm:
 
     mov ax,DATA_SEG
-    mov ds,ax                       ;设置数据段寄存器
+    mov ds,ax                  ;设置数据段寄存器
     mov ss,ax
     mov es,ax
     mov fs,ax
