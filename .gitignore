@@ -53,3 +53,8 @@ dkms.conf
 
 *.bin
 os-image
+
+
+.settings/
+.cproject
+.project
