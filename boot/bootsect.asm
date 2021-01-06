@@ -57,49 +57,55 @@ load_kernel:
 
     read:
 		mov ax,[read_sector]			;已读取的扇区数
-		mul ax,512
-	    mov bx,ax						;内核加载位置
+		mov bx,512
+		mul bx
+	    	mov bx,ax						;内核加载位置
 
 		mov ah,0x02						;BIOS读取磁盘函数
 		mov al,[sector]					;读取扇区数
 		mov ch,[track]					;柱面/磁道号
 		mov dh,[head]					;磁头0
 		mov cl,[start_sector]			;开始扇区引导扇区后的第一个扇区
-
+		mov dl,[BOOT_DRIVE]           		 ;磁盘驱动
 		int 0x13						;引发BIOS中断读取磁盘
 		jc disk_error					;判断CF标志如果置1 表示读取错误
 
-		cmp dh,al						;成功读取的扇区数与需要读取的扇区比较
-		jne disk_error					;如果不相等表示读取错误
-
-		mov ax,[read_sector]
-		add ax,dh
-		mov [read_sector],ax			;记录已读取的扇区数量
-
-		cmp SECTOR_NUM,ax				;如果需要读取的扇区数量与已读取的扇区数量不相等则继续读磁盘
+		;cmp dh,al						;成功读取的扇区数与需要读取的扇区比较
+		;jne disk_error					;如果不相等表示读取错误
+		
+		mov dl,[read_sector]
+		add al,dl
+		mov [read_sector],al			;记录已读取的扇区数量
+		
+		mov bl,LOAD_SECTOR_NUM
+		cmp bl,al				;如果需要读取的扇区数量与已读取的扇区数量不相等则继续读磁盘
 		je ok
 
-		mov ax,LOAD_SECTOR_NUM
-		sub ax,[read_sector]			;判断还需要读取的扇区数量
-		cmp ax,18						;大于则设置18个扇区
-		ja	ok2
-		mov [sector],ax					;所需读取的扇区
+		mov al,LOAD_SECTOR_NUM
+		sub al,[read_sector]			;判断还需要读取的扇区数量
+		cmp al,18						;大于则设置18个扇区
+		ja  ok2
+		mov [sector],al					;所需读取的扇区
 		jmp ok3
 	ok2:
-		mov [sector],18					;所需读取的扇区
+		mov al,18
+		mov [sector],al					;所需读取的扇区
 	ok3:
 		mov dh,[head]
 		cmp dh,0						;如果当前磁头是1 则使用磁头0读取,并且磁道加1
 		jne  ok4
-		mov [head],1
+		mov al,1
+		mov [head],al
 		jmp ok5
 	ok4:
-		mov [head],0					;当前磁头是0,则使用磁头1读取
-		mov ax,[track]
-		add ax,1
-		mov [track],ax
+		mov al,0
+		mov [head],al					;当前磁头是0,则使用磁头1读取
+		mov al,[track]
+		add al,1
+		mov [track],al
 	ok5:
-		mov [start_sector],1
+		mov al,1
+		mov [start_sector],al
 		jmp read
 
     ;mov bx,KERNEL_OFFSET_SEG
