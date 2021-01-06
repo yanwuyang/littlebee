@@ -55,17 +55,10 @@ disk_load2:
     jne disk_error 		 ;如果不相等表示读取错误
     ret
 
-;输入 加载扇区数量，加载位置，从几号扇区开始
-disk_load0:
-    
-
 disk_error:
 	mov bx,DISK_ERROR_MSG
 	call print_string
 	jmp $
-
-head db 0		;记录当前磁头
-track db 0 		;记录当前磁道
 
 DISK_ERROR_MSG db "Disk read error!",0
 	
