@@ -1,5 +1,5 @@
 [org 0x7c00]
-KERNEL_OFFSET equ 0x8000			;内核加载到内存中的偏移量
+KERNEL_OFFSET_SEG equ 0x800				;内核加载到内存中的偏移量
 	mov [BOOT_DRIVE],dl             ;引导扇区所在的磁盘设备
 	mov ax,0x800
 	mov es,ax
@@ -33,7 +33,10 @@ KERNEL_OFFSET equ 0x8000			;内核加载到内存中的偏移量
 	call load_kernel
 
 	;call switch_to_pm
-    call KERNEL_OFFSET              ;跳到内核代码处执行
+    ;call KERNEL_OFFSET              ;跳到内核代码处执行
+    mov bx,KERNEL_OFFSET_SEG
+    mov ds,bx
+    jmp KERNEL_OFFSET_SEG:0			 ;跳到内核代码处执行
 	jmp $
 
 
@@ -44,7 +47,7 @@ load_kernel:
 	mov bx,MSG_LOAD_KERNEL
 
 	call print_string
-    mov bx,0x800
+    mov bx,KERNEL_OFFSET_SEG
     mov es,bx
     mov bx,0x0
 	;mov bx,KERNEL_OFFSET			;从磁盘读取数据到内存的位置
