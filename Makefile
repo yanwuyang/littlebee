@@ -9,7 +9,7 @@ os-image: boot/bootsect.bin kernel.bin
 	cat $^ > os-image
 
 kernel.bin: head/kernel_entry.o head/head.o  head/setup_page.o kernel/sys_call.o  ${OBJ}
-	ld -m elf_i386 -s -o $@  $^ --oformat binary
+	ld -m elf_i386 -s -o $@ -Ttext 0x8000 $^ --oformat binary
 
 %.o : %.c ${HEADERS}
 	gcc -m32 -ffreestanding -c $< -o $@
