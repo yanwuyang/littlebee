@@ -8,6 +8,7 @@ START_SECTOR_NUM equ 2						;从第二个扇区开始 引导扇区后的第一�
 KERNEL_OFFSET_SEG equ 0x800					;内核加载到内存中的偏移量
 KERNEL_OFFSET equ KERNEL_OFFSET_SEG << 4
 
+start:
 	mov [BOOT_DRIVE],dl             ;引导扇区所在的磁盘设备
 	mov ax,0x800
 	mov es,ax
@@ -83,12 +84,12 @@ load_kernel:
 
 		mov al,LOAD_SECTOR_NUM
 		sub al,[read_sector]			;判断还需要读取的扇区数量
-		cmp al,18						;大于则设置18个扇区
+		cmp al,TRACK_SECTOR_NUM			;大于则设置18个扇区
 		ja  ok2
 		mov [sector],al					;所需读取的扇区
 		jmp ok3
 	ok2:
-		mov al,18
+		mov al,TRACK_SECTOR_NUM
 		mov [sector],al					;所需读取的扇区
 	ok3:
 		mov dh,[head]
