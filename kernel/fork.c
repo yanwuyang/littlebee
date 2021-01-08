@@ -39,6 +39,9 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 	if (!i) {
 		return -1;
 	}
+	unsigned long address = get_free_page();
+	print_num(address);
+
 	//为task_struct分配空间
 	unsigned long basemem = 0xe000;
 	unsigned int size = 0x5000;
