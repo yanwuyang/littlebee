@@ -2,10 +2,12 @@
 #include "../include/sched.h"
 #include "../include/system.h"
 
+
+#define DRIVE_INFO ((unsigned char *)0x7f00)
 void main() {
 	trap_init();	//初始中断服务例程
 	sched_init();	//初始调度读取和0号任务
-
+	print_num(*DRIVE_INFO);
 	sti();
 	print("sched init done\n");
 	move_to_user_mode();

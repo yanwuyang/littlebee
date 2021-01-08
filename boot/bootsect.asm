@@ -8,33 +8,32 @@ START_SECTOR_NUM equ 2						;从第二个扇区开始 引导扇区后的第一�
 KERNEL_OFFSET_SEG equ 0x800					;内核加载到内存中的偏移量
 KERNEL_OFFSET equ KERNEL_OFFSET_SEG << 4
 
+DRIVE_INFO equ 0x7f00						;驱动器存储信息
 start:
-	mov [BOOT_DRIVE],dl             ;引导扇区所在的磁盘设备
+	mov [BOOT_DRIVE],dl             		;引导扇区所在的磁盘设备
 	mov ax,0x800
 	mov es,ax
 	mov ah,0x88
-	int 0x15						;利用BIOS中断0x15 功能号 0x88 读取1MB以后的扩展内存大小（单位KB）
+	int 0x15								;利用BIOS中断0x15 功能号 0x88 读取1MB以后的扩展内存大小（单位KB）
 	mov [es:2],ax	
    	mov [es:6],dl
 
 	;xor dl,dl
 	mov ah,0x08
 	int 0x13
-	mov ax,0x800
-	mov es,ax
-   	mov [es:12],bl					;驱动器类型0x01-360k 0x02-1.2M 0x03-720k  ->  0x04-1.44M
-	mov [es:13],ch					;最大磁道号的低8位    -> 0x4f   80个磁道
-	mov [es:14],cl					;扇区数0-5位 柱面数高2位6-7 ->0x12 每条磁道18个扇区
-	mov [es:15],dh					;磁头数 -> 0x01  从0开始  2个磁头
-	mov [es:17],dl                  ;驱动器数 -> 0x01
-        							;总容量 2*80*18*512 =
+   	mov [DRIVE_INFO],bl						;驱动器类型0x01-360k 0x02-1.2M 0x03-720k  ->  0x04-1.44M
+	mov [DRIVE_INFO+1],ch					;最大磁道号的低8位    -> 0x4f   80个磁道
+	mov [DRIVE_INFO+2],cl					;扇区数0-5位 柱面数高2位6-7 ->0x12 每条磁道18个扇区
+	mov [DRIVE_INFO+3],dh					;磁头数 -> 0x01  从0开始  2个磁头
+	mov [DRIVE_INFO+4],dl                   ;驱动器数 -> 0x01
+        									;总容量 2*80*18*512 =
 	xor ax,ax
 	mov es,ax
 
-	;mov [BOOT_DRIVE],dl			;引导扇区所在的磁盘设备
+	;mov [BOOT_DRIVE],dl					;引导扇区所在的磁盘设备
 	
-	mov bp,0xff00					;设置栈基址
-	mov sp,bp						;将栈顶与栈基址设置相同内存位置
+	mov bp,0xff00							;设置栈基址
+	mov sp,bp								;将栈顶与栈基址设置相同内存位置
 
 	mov bx,MSG_REAL_MODE
     call print_string
@@ -42,7 +41,7 @@ start:
 	call load_kernel
 
 	;call switch_to_pm
-    call KERNEL_OFFSET		       ;跳到内核代码处执行
+    call KERNEL_OFFSET		       			;跳到内核代码处执行
 	jmp $
 
 
@@ -60,7 +59,7 @@ load_kernel:
 		mov ax,[read_sector]			;已读取的扇区数
 		mov bx,512
 		mul bx
-	    	mov bx,ax						;内核加载位置
+	    mov bx,ax						;内核加载位置
 
 		mov ah,0x02						;BIOS读取磁盘函数
 		mov al,[sector]					;读取扇区数
