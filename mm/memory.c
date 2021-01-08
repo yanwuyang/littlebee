@@ -13,7 +13,7 @@ unsigned long get_free_page(){
 	}
 	mem_map[i]++;
 	print_num(i);
-	return i<<12;
+	return LOW_MEM+(i<<12);
 }
 
 void mem_init(long start_mem, long end_mem){

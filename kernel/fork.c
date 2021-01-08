@@ -39,6 +39,10 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 	if (!i) {
 		return -1;
 	}
+	print("get_free_page:\n");
+	unsigned long address = get_free_page();
+	print_num(address);
+	print("get_free_page:\n");
 	unsigned long address = get_free_page();
 	print_num(address);
 
