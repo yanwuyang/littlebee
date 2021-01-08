@@ -33,11 +33,11 @@ void schedule(void) {
 			if (task[i] != NULL && current->pid != task[i]->pid) {
 				current->counter = 10000;
 				print_num(current->pid);
-				print("\n");
+				//print("--");
 				//current = task[i];
 				__asm__("movw %%dx,%1\n\t"
-						"xchgl %%ecx,current\n\t"
-						"ljmp *%0"::"m" (*&__tmp.a),"m" (*&__tmp.b),"d"(_TSS(i)),"c"((long)task[i]));
+					"xchgl %%ecx,current\n\t"
+					"ljmp *%0"::"m" (*&__tmp.a),"m" (*&__tmp.b),"d"(_TSS(i)),"c"((long)task[i]));
 				break;
 			}
 		}

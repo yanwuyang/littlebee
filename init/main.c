@@ -4,10 +4,18 @@
 
 
 #define DRIVE_INFO ((unsigned char *)0x7f00)
+#define EXT_MEM_K (*(unsigned short *)0x7f05)
+
 void main() {
 	trap_init();	//初始中断服务例程
 	sched_init();	//初始调度读取和0号任务
-	print_num(*DRIVE_INFO);
+	int i;
+	for(i=0;i<5;i++){
+	    print("\n");
+	    print_num(*(DRIVE_INFO+i));
+	}
+	print("\n");
+	print_num(EXT_MEM_K);	
 	sti();
 	print("sched init done\n");
 	move_to_user_mode();
