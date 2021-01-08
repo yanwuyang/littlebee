@@ -40,6 +40,7 @@ void print_num_(int num) {
 	vidmem[offset] = num % 10 + 48;
 	vidmem[offset + 1] = WHITE_ON_BLACK;
 	offset += 2;
+	offset = handle_scrolling(offset);
 	set_cursor(offset);
 }
 
