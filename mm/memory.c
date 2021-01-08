@@ -12,7 +12,6 @@ unsigned long get_free_page(){
 		i++;
 	}
 	mem_map[i]++;
-	print_num(i);
 	return LOW_MEM+(i<<12);
 }
 

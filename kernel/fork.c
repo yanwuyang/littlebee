@@ -39,17 +39,10 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 	if (!i) {
 		return -1;
 	}
-	print("get_free_page:\n");
-	unsigned long address = get_free_page();
-	print_num(address);
-	print("get_free_page:\n");
-	unsigned long address = get_free_page();
-	print_num(address);
+	
 
 	//为task_struct分配空间
-	unsigned long basemem = 0xe000;
-	unsigned int size = 0x5000;
-	new = (struct task_struct *) (basemem + (i - 1) * size);
+	new = (struct task_struct *)get_free_page();
 	struct desc_struct none_ = { .a = 0, .b = 0 };
 	struct desc_struct code_ = { .a = 0x9f, .b = 0xc0fa00 };
 	struct desc_struct data_ = { .a = 0x9f, .b = 0xc0f200 };
