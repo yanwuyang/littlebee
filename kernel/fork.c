@@ -43,6 +43,10 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 
 	//为task_struct分配空间
 	new = (struct task_struct *)get_free_page();
+
+	unsigned long new_code_base,new_data_base;
+	new_code_base = new_data_base = i * TASK_SIZE;
+
 	struct desc_struct none_ = { .a = 0, .b = 0 };
 	struct desc_struct code_ = { .a = 0x9f, .b = 0xc0fa00 };
 	struct desc_struct data_ = { .a = 0x9f, .b = 0xc0f200 };

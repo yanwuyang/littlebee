@@ -2,6 +2,7 @@
 
 #define PAGE_SIZE 4096
 #define NR_TASKS 64
+#define TASK_SIZE	0x04000000   //64KB
 
 #define HZ 100
 #define LATCH (1193180/HZ)
