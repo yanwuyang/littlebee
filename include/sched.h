@@ -67,6 +67,32 @@ struct task_struct {
  * G 1
  * D 1
  *
+ * back_link=0
+ * esp0=PAGE_SIZE+(long)&init_task
+ * ss0=0x10
+ * esp1=0		//1级别
+ * ss1=0
+ * esp2=0
+ * ss2=0
+ * cr3=(long)&pg_dir
+ * eip=0
+ * eflags=0
+ * eax=0
+ * ecx=0
+ * edx=0
+ * ebx=0
+ * esp=0
+ * ebp=0
+ * esi=0
+ * edi=0
+ * es=0x17		//高16位为0
+ * cs=0x17
+ * ss=0x17
+ * ds=0x17
+ * fs=0x17
+ * gs=0x17
+ * ldt=_LDT(0)	        //ldt段选择符 高16位为0
+ * trace_bitmap=0x80000000
  */
 
 #define INIT_TASK \
@@ -84,3 +110,74 @@ struct task_struct {
 
 extern struct task_struct *task[NR_TASKS];
 extern struct task_struct *current;
+
+/*
+ * ss
+ * esp
+ * flages
+ * cs
+ * eip
+ *
+ */
+#define move_to_user_mode() \
+__asm__ ("movl %%esp,%%eax\n\t" \
+	"pushl $0x17\n\t" \
+	"pushl %%eax\n\t" \
+	"pushfl\n\t" \
+	"pushl $0x0f\n\t" \
+	"pushl $1f\n\t" \
+	"iret\n" \
+	"1:\tmovl $0x17,%%eax\n\t" \
+	"mov %%ax,%%ds\n\t" \
+	"mov %%ax,%%es\n\t" \
+	"mov %%ax,%%fs\n\t" \
+	"mov %%ax,%%gs" \
+	:::"ax")
+
+
+
+#define _set_base(addr,base) \
+__asm__("movw %%dx,%0\n\t" \
+	"rorl $16,%%edx\n\t" \
+	"movb %%dl,%1\n\t" \
+	"movb %%dh,%2" \
+	::"m" (*((addr)+2)), \
+	  "m" (*((addr)+4)), \
+	  "m" (*((addr)+7)), \
+	  "d" (base) \
+	:"dx")
+
+#define _set_limit(addr,limit) \
+__asm__("movw %%dx,%0\n\t" \
+	"rorl $16,%%edx\n\t" \
+	"movb %1,%%dh\n\t" \
+	"andb $0xf0,%%dh\n\t" \
+	"orb %%dh,%%dl\n\t" \
+	"movb %%dl,%1" \
+	::"m" (*(addr)), \
+	  "m" (*((addr)+6)), \
+	  "d" (limit) \
+	:"dx")
+
+#define set_base(ldt,base) _set_base( ((char *)&(ldt)) , base )
+#define set_limit(ldt,limit) _set_limit( ((char *)&(ldt)) , (limit-1)>>12 )
+
+#define _get_base(addr) ({\
+unsigned long __base; \
+__asm__("movb %3,%%dh\n\t" \
+	"movb %2,%%dl\n\t" \
+	"shll $16,%%edx\n\t" \
+	"movw %1,%%dx" \
+	:"=d" (__base) \
+	:"m" (*((addr)+2)), \
+	 "m" (*((addr)+4)), \
+	 "m" (*((addr)+7))); \
+__base;})
+
+#define get_base(ldt) _get_base( ((char *)&(ldt)) )
+
+#define get_limit(segment) ({ \
+unsigned long __limit; \
+__asm__("lsll %1,%0\n\tincl %0":"=r" (__limit):"r" (segment)); \
+__limit;})
+

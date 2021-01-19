@@ -2,6 +2,30 @@
 #include "../include/screen.h"
 #include "../include/system.h"
 
+
+int copy_mem(int nr,struct task_struct * p)
+{
+	unsigned long old_data_base,new_data_base,data_limit;
+	unsigned long old_code_base,new_code_base,code_limit;
+
+	code_limit=get_limit(0x0f);
+	data_limit=get_limit(0x17);
+	old_code_base = get_base(current->ldt[1]);
+	old_data_base = get_base(current->ldt[2]);
+	if (old_data_base != old_code_base)
+		print("We don't support separate I&D\n");
+	if (data_limit < code_limit)
+		print("Bad data_limit\n");
+	new_data_base = new_code_base = nr * TASK_SIZE;
+	set_base(p->ldt[1],new_code_base);
+	set_base(p->ldt[2],new_data_base);
+	if (copy_page_tables(old_data_base,new_data_base,data_limit)) {
+		//free_page_tables(new_data_base,data_limit);
+		return -1;
+	}
+	return 0;
+}
+
 /**
  *
  * 创建进程
@@ -44,12 +68,9 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 	//为task_struct分配空间
 	new = (struct task_struct *)get_free_page();
 
-	unsigned long new_code_base,new_data_base;
-	new_code_base = new_data_base = i * TASK_SIZE;
-
-	struct desc_struct none_ = { .a = 0, .b = 0 };
+	/*struct desc_struct none_ = { .a = 0, .b = 0 };
 	struct desc_struct code_ = { .a = 0x9f, .b = 0xc0fa00 };
-	struct desc_struct data_ = { .a = 0x9f, .b = 0xc0f200 };
+	struct desc_struct data_ = { .a = 0x9f, .b = 0xc0f200 };*/
 	//复制当前任务
 	*new = *current;
 	new->pid = i;
@@ -74,12 +95,14 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 	new->tss.fs = fs & 0xffff;
 	new->tss.gs = gs & 0xffff;
 	//new->ldt = {{0,0},{0x9f,0xc0fa00},{0x9f,0xc0f200}};
-	new->ldt[0] = none_;
+
+	/*new->ldt[0] = none_;
 	new->ldt[1] = code_;
-	new->ldt[2] = data_;
+	new->ldt[2] = data_;*/
 	new->tss.ldt = _LDT(i);
 	new->tss.trace_bitmap = 0x80000000;
 
+	copy_mem(i,new);
 	set_tss_desc(gdt + (i << 1) + FIRST_TSS_ENTRY, &(new->tss));
 	set_ldt_desc(gdt + (i << 1) + FIRST_LDT_ENTRY, &(new->ldt));
 	task[i] = new;
