@@ -138,14 +138,13 @@ __asm__ ("movl %%esp,%%eax\n\t" \
 
 #define _set_base(addr,base) \
 __asm__("movw %%dx,%0\n\t" \
-	"rorl $16,%%edx\n\t" \
-	"movb %%dl,%1\n\t" \
-	"movb %%dh,%2" \
+        "rorl $16,%%edx\n\t" \
+        "movb %%dl,%1\n\t" \
+        "movb %%dh,%2" \
 	::"m" (*((addr)+2)), \
-	  "m" (*((addr)+4)), \
-	  "m" (*((addr)+7)), \
-	  "d" (base) \
-	:"dx")
+          "m" (*((addr)+4)), \
+          "m" (*((addr)+7)), \
+          "d" (base))
 
 #define _set_limit(addr,limit) \
 __asm__("movw %%dx,%0\n\t" \

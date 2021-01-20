@@ -7,12 +7,14 @@
 #define EXT_MEM_K (*(unsigned short *)0x7f05)
 
 void main() {
+        /*
 	int i;
 	for(i=0;i<5;i++){
 	    print("\n");
 	    print_num(*(DRIVE_INFO+i));
 	}
 	print("\n");
+        */
 	//1M内存+扩展内存
 	long memory_end = (1<<20) + (EXT_MEM_K<<10);
 	long main_memory_start = 1*1024*1024;
