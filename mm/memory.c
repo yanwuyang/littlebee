@@ -51,7 +51,7 @@ int copy_page_tables(unsigned long from,unsigned long to,long size)
 				*from_page_table = new_page | (PAGE_DIRTY | 7);
 				continue;*/
 			}
-			this_page &= ~2;//置位可读可执行
+			this_page &= ~2;//置位可读可执行,注意：如果对页面写会发生页异常中断，需要对中断进行处理
 			*to_page_table = this_page;
 			if (this_page > LOW_MEM) {
 				*from_page_table = this_page;
