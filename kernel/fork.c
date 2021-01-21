@@ -67,11 +67,10 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 
 	//为task_struct分配空间
 	new = (struct task_struct *)get_free_page();
-        task[i] = new;
 	//struct desc_struct none_ = { .a = 0, .b = 0 };
 	//struct desc_struct code_ = { .a = 0x9f, .b = 0xc0fa00 };
 	//struct desc_struct data_ = { .a = 0x9f, .b = 0xc0f200 };
-	//复制当前任务
+	//复制当前任务 注意：复制结构体需要cld（清方向标志，即DF=0，地址从低到高）
 	*new = *current;
 	new->pid = i;
 	new->state = 0;
@@ -95,7 +94,7 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 	new->tss.fs = fs & 0xffff;
 	new->tss.gs = gs & 0xffff;
 	//new->ldt = {{0,0},{0x9f,0xc0fa00},{0x9f,0xc0f200}};
-
+        
 	//new->ldt[0] = none_;
 	//new->ldt[1] = code_;
 	//new->ldt[2] = data_;
@@ -103,8 +102,9 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 	new->tss.trace_bitmap = 0x80000000;
 
 	int r = copy_mem(i,new);
-        //print_num(r);
+        
 	set_tss_desc(gdt + (i << 1) + FIRST_TSS_ENTRY, &(new->tss));
 	set_ldt_desc(gdt + (i << 1) + FIRST_LDT_ENTRY, &(new->ldt));
+        task[i] = new;
 	return i;
 }

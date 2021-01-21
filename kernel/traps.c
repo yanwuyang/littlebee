@@ -1,9 +1,12 @@
 #include "../include/head.h"
 #include "../include/system.h"
+#include "../include/screen.h"
 
 extern void keyboard_interrupt(void);
+extern void page_fault(void);
 
 void page_exception(void) {
+   print("page fault\n");
 }
 
 void divide_error(void) {
@@ -33,8 +36,6 @@ void segment_not_present(void) {
 void stack_segment(void) {
 }
 void general_protection(void) {
-}
-void page_fault(void) {
 }
 void coprocessor_error(void) {
 }

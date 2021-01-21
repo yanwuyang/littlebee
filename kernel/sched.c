@@ -23,28 +23,28 @@ struct task_struct * task[NR_TASKS] = { &(init_task.task), };
  * jmp 16位段选择符:32位偏移地址
  */
 void schedule(void) {
-	if (current->counter == 0) {
-		//print("schedule\n");
-		int i;
-		struct {
-			long a, b;
-		} __tmp;
-		for (i = 0; i < NR_TASKS; i++) {
-			if (task[i] != NULL && current->pid != task[i]->pid) {
-				current->counter = 10000;
-				print_num(current->pid);
-				//print("--");
-				//current = task[i];
-				__asm__("movw %%dx,%1\n\t"
-					"xchgl %%ecx,current\n\t"
-					"ljmp *%0"::"m" (*&__tmp.a),"m" (*&__tmp.b),"d"(_TSS(i)),"c"((long)task[i]));
-				break;
-			}
+   if (current->counter == 0) {
+       //print("schedule\n");
+	int i;
+	struct {
+		long a, b;
+	} __tmp;
+	for (i = 0; i < NR_TASKS; i++) {
+		if (task[i] != NULL && current->pid != task[i]->pid) {
+			current->counter = 10000;
+			print_num(current->pid);
+			//print("--");
+			//current = task[i];
+			__asm__("movw %%dx,%1\n\t"
+				"xchgl %%ecx,current\n\t"
+				"ljmp *%0"::"m" (*&__tmp.a),"m" (*&__tmp.b),"d"(_TSS(i)),"c"((long)task[i]));
+			break;
 		}
-		//current->counter=10000;
-	} else {
-		current->counter--;
 	}
+	//current->counter=10000;
+    } else {
+	current->counter--;
+    }
 }
 
 
@@ -56,11 +56,11 @@ void sched_init(void) {
 	set_ldt_desc(gdt + FIRST_LDT_ENTRY, &(init_task.task.ldt));
 	p = gdt + 2 + FIRST_TSS_ENTRY;
 	for (i = 1; i < NR_TASKS; i++) {
-		task[i] = NULL;
-		p->a = p->b = 0;
-		p++;
-		p->a = p->b = 0;
-		p++;
+	   task[i] = NULL;
+	   p->a = p->b = 0;
+	   p++;
+	   p->a = p->b = 0;
+	   p++;
 	}
 	//__asm__("pushfl ; andl $0xffffbfff,(%esp) ; popfl");
 	ltr(0);//加载任务0 tss到tr寄存器 此时并不会引发任务切换
