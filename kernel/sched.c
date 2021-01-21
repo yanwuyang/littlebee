@@ -35,6 +35,9 @@ void schedule(void) {
 			print_num(current->pid);
 			//print("--");
 			//current = task[i];
+			//xchgl %%ecx,current 原子操作将新任务的指针赋值给current变量
+			//ljmp 将发生任务切换，cpu自动将当前寄存器的值保存到当前任务的tss中，下次任务切换回来后从当前指令的下一条开始执行
+			//将当前新任务中的tss中的值赋值给cpu对应的寄存器上。
 			__asm__("movw %%dx,%1\n\t"
 				"xchgl %%ecx,current\n\t"
 				"ljmp *%0"::"m" (*&__tmp.a),"m" (*&__tmp.b),"d"(_TSS(i)),"c"((long)task[i]));
