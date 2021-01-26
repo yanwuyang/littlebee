@@ -23,7 +23,7 @@ struct task_struct * task[NR_TASKS] = { &(init_task.task), };
  * jmp 16位段选择符:32位偏移地址
  */
 void schedule(void) {
-   if (current->counter == 0) {
+   if (current->counter != 0) {
        //print("schedule\n");
 	int i;
 	struct {
@@ -46,7 +46,7 @@ void schedule(void) {
 	}
 	//current->counter=10000;
     } else {
-	current->counter--;
+        current->counter--;
     }
 }
 

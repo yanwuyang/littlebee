@@ -22,7 +22,6 @@ unsigned long get_free_page(){
 
 
 void page_exception(unsigned long errcode,unsigned long address) {
-   //print_num(errcode);
    //页索引
    unsigned long page_index = (address>>10) & 0xffc;
    //页表索引
@@ -36,14 +35,14 @@ void page_exception(unsigned long errcode,unsigned long address) {
      //页存在 处理写保护
      unsigned long old_page =  0xfffff000 & *table_entry;
      if (old_page >= LOW_MEM){
-	mem_map[MAP_NR(old_page)]--;
+        mem_map[MAP_NR(old_page)]--;
      }
      unsigned long new_page = get_free_page();
      copy_page(old_page,new_page);
      *table_entry = new_page | 7;//页存在 可读可写可执行
      invalidate();
    }else{
-   
+     //页不存在处理
    }     
 }
                                                            
