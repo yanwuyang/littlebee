@@ -105,6 +105,6 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
         
 	set_tss_desc(gdt + (i << 1) + FIRST_TSS_ENTRY, &(new->tss));
 	set_ldt_desc(gdt + (i << 1) + FIRST_LDT_ENTRY, &(new->ldt));
-    task[i] = new;
+        task[i] = new;
 	return i;
 }

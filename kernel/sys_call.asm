@@ -19,7 +19,7 @@ keyboard_interrupt:
 timer_interrupt:
     push ds
     push es
-    push fs					;保存用户空间的ds,es,fs
+    push fs				;保存用户空间的ds,es,fs
     push edx
     push ecx
     push ebx
@@ -60,7 +60,7 @@ system_call:
     mov ds,dx
     mov es,dx
 
-    call [sys_call_table+eax] 	;eax调用号
+    call [sys_call_table+eax] 			;eax调用号
 	
     push eax					;返回值
     pop eax
@@ -85,26 +85,27 @@ sys_fork:
 
 
 page_fault:
+    xchg [esp],eax                     		;取出错误码到eax,交换esp与eax中的值
     push ds
     push es
     push fs                                     ;保存用户空间的ds,es,fs
     push edx
-    push ecx
-    push ebx
-    push eax                            ;保存edx,ecx,ebx,eax 参数
-    mov eax,0x10                        ;ds、es指向内核数据段
-    mov ds,ax
-    mov es,ax
-    mov fs,ax
-
+    push ecx                            	;保存edx,ecx 参数
+    mov edx,0x10                        	;ds、es指向内核数据段
+    mov ds,dx
+    mov es,dx
+    mov fs,dx
+    mov edx,cr2                        	        ;页异常线性地址
+    push edx
+    push eax
     call page_exception
 
-    pop eax
-    pop ebx
+    add esp,8
     pop ecx
     pop edx
     pop fs
     pop es
     pop ds
+    pop eax
     iret
 

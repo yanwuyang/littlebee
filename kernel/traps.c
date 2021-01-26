@@ -5,10 +5,6 @@
 extern void keyboard_interrupt(void);
 extern void page_fault(void);
 
-void page_exception(void) {
-   print("page fault\n");
-}
-
 void divide_error(void) {
 }
 void debug(void) {

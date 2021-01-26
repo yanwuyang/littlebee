@@ -1,6 +1,11 @@
 #include "../include/screen.h"
 #include "../include/mm.h"
 
+
+#define copy_page(from,to) \
+__asm__("cld ; rep ; movsl"::"S" (from),"D" (to),"c" (1024))
+
+
 unsigned char mem_map[PAGING_PAGES] = {0,};
 
 /**
@@ -15,6 +20,33 @@ unsigned long get_free_page(){
 	return LOW_MEM+(i<<12);
 }
 
+
+void page_exception(unsigned long errcode,unsigned long address) {
+   //print_num(errcode);
+   //页索引
+   unsigned long page_index = (address>>10) & 0xffc;
+   //页表索引
+   unsigned long *page_table_index =(unsigned long *)((address>>20) & 0xffc);
+   //页表基地址
+   unsigned long page_table_base = *page_table_index & 0xfffff000;
+   //页地址
+   unsigned long *table_entry = (unsigned long *)(page_index+page_table_base);
+  
+   if(errcode & 1){
+     //页存在 处理写保护
+     unsigned long old_page =  0xfffff000 & *table_entry;
+     if (old_page >= LOW_MEM){
+	mem_map[MAP_NR(old_page)]--;
+     }
+     unsigned long new_page = get_free_page();
+     copy_page(old_page,new_page);
+     *table_entry = new_page | 7;//页存在 可读可写可执行
+     invalidate();
+   }else{
+   
+   }     
+}
+                                                           
 int copy_page_tables(unsigned long from,unsigned long to,long size)
 {
 	unsigned long * from_page_table;
