@@ -51,7 +51,6 @@ int copy_mem(int nr,struct task_struct * p)
 int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 		long ecx, long edx, long orig_eax, long fs, long es, long ds, long eip,
 		long cs, long eflags, long esp, long ss) {
-	print("fork\n");
 	struct task_struct *new;
 	//查找一个空的task_struct
 	int i;

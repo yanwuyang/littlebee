@@ -31,13 +31,10 @@ void main() {
 	sys_print("go to frok\n");
 	int pid = fork();
 	if (pid == 1) {
-	    for (;;) {
-		// printf("pid:0\n");
-	    }
+	   //fork();
 	} else {
-	    for (;;) {
-		// printf("pid:1\n");
-	    }
+	   fork();
+           fork();
 	}
 	for (;;) {
 
