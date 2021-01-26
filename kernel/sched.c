@@ -37,16 +37,16 @@ struct task_struct * task[NR_TASKS] = { &(init_task.task), };
  */
 void schedule(void) {
    if (current->counter == 0) {
-	int i;
+        int i;
         int next_task=-1;
         rep:
-	for (i = 0; i < NR_TASKS; i++) {
+        for (i = 0; i < NR_TASKS; i++) {
             if (task[i] != NULL && current->pid != task[i]->pid && task[i]->counter!=0) {
                 print_num(current->pid);
                 next_task = i;
-		break;
-	    }
-	}
+                break;
+            }
+        }
         if(next_task!=-1){
            switch_to(next_task);
         }else{
