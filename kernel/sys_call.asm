@@ -3,17 +3,29 @@ global keyboard_interrupt,timer_interrupt,system_call,sys_fork,page_fault
 [extern sys_call_table]
 [extern copy_process]
 [extern page_exception]
+;[extern keyboard]
 keyboard_interrupt:
+    push ds
+    push es
+    push fs
+    push edx
+    push ecx
+    push eax
+    mov eax,0x10
+    mov ds,ax
+    mov es,ax
+    mov fs,ax
     mov al,0x20
     out 0x20,al             ;设置中断器主片  EOI 1
     ;call keyboard
-    xor eax,eax
-    in al, 0x60
-    mov al,'a'
-    mov ah,3
-    ;mov [0xb8000],al
-    ;mov [0xb8001],ah
-
+    
+    pop eax
+    pop ebx
+    pop ecx
+    pop edx
+    pop fs
+    pop es
+    pop ds
     iret
 
 timer_interrupt:
