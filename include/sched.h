@@ -97,12 +97,37 @@ struct task_struct {
 
 #define INIT_TASK \
  { \
-   0,0,15,{{0,0},{0x9f,0xc0fa00},{0x9f,0xc0f200}}, \
-    { \
-       0,PAGE_SIZE+(long)&init_task,0x10,0,0,0,0,(long)&pg_dir, \
-       0,0,0,0,0,0,0,0, \
-       0,0,0x17,0x17,0x17,0x17,0x17,0x17, \
-       _LDT(0),0x80000000 \
+   .pid = 0, \
+   .state = 0, \
+   .counter = 15, \
+   .ldt = {{0,0},{0x9f,0xc0fa00},{0x9f,0xc0f200}}, \
+   .tss = { \
+       .back_link = 0, \
+       .esp0 = PAGE_SIZE+(long)&init_task, \
+	   .ss0 = 0x10, \
+       .esp1 = 0, \
+	   .ss1 = 0, \
+	   .esp2 = 0, \
+	   .ss2 = 0, \
+	   .cr3 = (long)&pg_dir, \
+       .eip = 0, \
+	   .eflags = 0, \
+	   .eax = 0, \
+	   .ecx = 0, \
+	   .edx = 0, \
+	   .ebx = 0, \
+	   .esp = 0, \
+	   .ebp = 0, \
+       .esi = 0, \
+	   .edi = 0, \
+	   .es = 0x17, \
+	   .cs = 0x17, \
+	   .ss = 0x17, \
+	   .ds = 0x17, \
+	   .fs = 0x17, \
+	   .gs = 0x17, \
+       .ldt = _LDT(0), \
+	   .trace_bitmap = 0x80000000 \
     } \
 }
 
