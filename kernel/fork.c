@@ -28,7 +28,8 @@ int copy_mem(int nr,struct task_struct * p)
 
 /**
  *
- * 创建进程
+ * 创建进程 复制当前进程内存快照，为新进程分配新的用户空间
+ *
  * 参数的顺序与压入栈的顺序相反
  * ss   用户空间栈段寄存器
  * esp  用户空间栈顶寄存器
@@ -76,7 +77,7 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
 	new->counter = 15;
 	new->tss.esp0 = 4096 + (long) new;
 	new->tss.ss0 = 0x10;
-	new->tss.eip = eip;
+	new->tss.eip = eip;//syscall.c ->fork()-> int 0x80的下一行
 	new->tss.eflags = eflags;
 	new->tss.eax = 0; //返回值
 	new->tss.ecx = ecx;
@@ -104,6 +105,6 @@ int copy_process(long ebp, long edi, long esi, long gs, long none, long ebx,
         
 	set_tss_desc(gdt + (i << 1) + FIRST_TSS_ENTRY, &(new->tss));
 	set_ldt_desc(gdt + (i << 1) + FIRST_LDT_ENTRY, &(new->ldt));
-        task[i] = new;
+	task[i] = new;
 	return i;
 }

@@ -34,7 +34,7 @@ void main() {
 	   //fork();
 	} else {
 	   fork();
-           fork();
+	   fork();
 	}
 	for (;;) {
 
