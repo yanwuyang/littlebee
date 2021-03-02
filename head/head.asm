@@ -186,7 +186,6 @@ idt_descr:
 
 [extern after_setup_page]
 init_pm:
-
     mov ax,DATA_SEG
     mov ds,ax                  ;设置数据段寄存器
     mov ss,ax

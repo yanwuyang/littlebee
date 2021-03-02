@@ -10,6 +10,7 @@ KERNEL_OFFSET equ KERNEL_OFFSET_SEG << 4
 
 DRIVE_INFO equ 0x7f00						;驱动器存储信息
 EXT_MEM_K equ 0x7f05						;扩展内存
+CPU_INFO equ 0x7f07
 start:
 	mov [BOOT_DRIVE],dl             			;引导扇区所在的磁盘设备
 	
@@ -28,16 +29,31 @@ start:
         int 0x15                                                ;利用BIOS中断0x15 功能号 0x88 读取1MB以后的扩展内存大小（单位KB）
         mov [EXT_MEM_K],ax
 	
+	xor eax,eax
+	cpuid
+	mov [CPU_INFO],ebx
+	mov [CPU_INFO+4],edx
+	mov [CPU_INFO+8],ecx
+	
+	xor ax,ax
+	mov [CPU_INFO+12],al					;字符串结尾标志
+	
+	mov eax,1
+	cpuid
+	mov [CPU_INFO+13],eax
+        mov [CPU_INFO+17],ecx
+        mov [CPU_INFO+21],edx
+
 	mov bp,0xff00						;设置栈基址
 	mov sp,bp						;将栈顶与栈基址设置相同内存位置
 
 	mov bx,MSG_REAL_MODE
-    call print_string
+	call print_string
 
 	call load_kernel
 
 	;call switch_to_pm
-    call KERNEL_OFFSET		       				;跳到内核代码处执行
+	call KERNEL_OFFSET		       			;跳到内核代码处执行
 	jmp $
 
 
@@ -49,13 +65,13 @@ load_kernel:
 	call print_string
 
 	mov bx,KERNEL_OFFSET_SEG
-    mov es,bx
+	mov es,bx
 
     read:
 		mov ax,[read_sector]			;已读取的扇区数
 		mov bx,512
 		mul bx
-	    mov bx,ax						;内核加载位置
+		mov bx,ax						;内核加载位置
 
 		mov ah,0x02						;BIOS读取磁盘函数
 		mov al,[sector]					;读取扇区数

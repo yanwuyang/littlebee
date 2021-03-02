@@ -5,6 +5,12 @@
 
 #define DRIVE_INFO ((unsigned char *)0x7f00)
 #define EXT_MEM_K (*(unsigned short *)0x7f05)
+#define CPU_INFO ((unsigned char*)0x7f07)
+
+void smp_init(){
+	print(CPU_INFO);
+	print("\n");
+}
 
 void main() {
         /*
@@ -19,6 +25,8 @@ void main() {
 	long memory_end = (1<<20) + (EXT_MEM_K<<10);
 	long main_memory_start = 1*1024*1024;
 	mem_init(main_memory_start,memory_end);
+	
+	smp_init();
 
 	trap_init();	//初始中断服务例程
 	sched_init();	//初始调度读取和0号任务
